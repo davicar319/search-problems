@@ -53,6 +53,22 @@ public class Maze {
         return locations;
     }
 
+    public void mark(List<MazeLocation> path) {
+        for (MazeLocation ml : path) {
+            grid[ml.row][ml.column] = Cell.PATH;
+        }
+        grid[start.row][start.column] = Cell.START;
+        grid[goal.row][goal.column] = Cell.GOAL;
+    }
+
+    public void clear(List<MazeLocation> path) {
+        for (MazeLocation ml : path) {
+            grid[ml.row][ml.column] = Cell.EMPTY;
+        }
+        grid[start.row][start.column] = Cell.START;
+        grid[goal.row][goal.column] = Cell.GOAL;
+    }
+
     // return a nicely formatted version of the maze for printing
     @Override
     public String toString() {
@@ -79,6 +95,16 @@ public class Maze {
     public static void main(String[] args) {
         Maze m = new Maze();
         System.out.println(m);
+
+        GenericSearch.Node<MazeLocation> solution1 = GenericSearch.dfs(m.start, m::goalTest, m::successors);
+        if (solution1 == null) {
+            System.out.println("No solution found using depth-first search!");
+        } else {
+            List<MazeLocation> path1 = GenericSearch.nodeToPath(solution1);
+            m.mark(path1);
+            System.out.println(m);
+            m.clear(path1);
+        }
     }
 
     public enum Cell {
