@@ -69,6 +69,18 @@ public class Maze {
         grid[goal.row][goal.column] = Cell.GOAL;
     }
 
+    public double euclideanDistance(MazeLocation ml) {
+        int xdist = ml.column - goal.column;
+        int ydist = ml.row - goal.row;
+        return Math.sqrt((xdist * xdist) + (ydist * ydist));
+    }
+
+    public double manhattanDistance(MazeLocation ml) {
+        int xdist = Math.abs(ml.column - goal.column);
+        int ydist = Math.abs(ml.row - goal.row);
+        return (xdist + ydist);
+    }
+
     // return a nicely formatted version of the maze for printing
     @Override
     public String toString() {
@@ -93,9 +105,11 @@ public class Maze {
     }
 
     public static void main(String[] args) {
+        System.out.println("************ Empty Maze **********");
         Maze m = new Maze();
         System.out.println(m);
 
+        System.out.println("************ Depth First Search **********");
         GenericSearch.Node<MazeLocation> solution1 = GenericSearch.dfs(m.start, m::goalTest, m::successors);
         if (solution1 == null) {
             System.out.println("No solution found using depth-first search!");
@@ -104,6 +118,28 @@ public class Maze {
             m.mark(path1);
             System.out.println(m);
             m.clear(path1);
+        }
+
+        System.out.println("************ Breadth First Search **********");
+        GenericSearch.Node<MazeLocation> solution2 = GenericSearch.bfs(m.start, m::goalTest, m::successors);
+        if (solution2 == null) {
+            System.out.println("No solution found using breadth-first search!");
+        } else {
+            List<MazeLocation> path2 = GenericSearch.nodeToPath(solution2);
+            m.mark(path2);
+            System.out.println(m);
+            m.clear(path2);
+        }
+
+        System.out.println("************ A(Star) Search **********");
+        GenericSearch.Node<MazeLocation> solution3 = GenericSearch.astar(m.start, m::goalTest, m::successors, m::manhattanDistance);
+        if (solution3 == null) {
+            System.out.println("No solution found using A*!");
+        } else {
+            List<MazeLocation> path3 = GenericSearch.nodeToPath(solution3);
+            m.mark(path3);
+            System.out.println(m);
+            m.clear(path3);
         }
     }
 
